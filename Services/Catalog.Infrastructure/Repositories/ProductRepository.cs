@@ -15,45 +15,40 @@ namespace Catalog.Infrastructure.Repositories
         {
             return await context.Products.Find(p => p.Id == id).FirstOrDefaultAsync();
         }
-
-        public Task<bool> DeleteProduct(string id)
+        public async Task<IEnumerable<Product>> GetProductsByName(string name)
         {
-            throw new NotImplementedException();
+            return await context.Products.Find(p => p.Name == name).ToListAsync();
+        }
+        public async Task<IEnumerable<Product>> GetProductsByType(string type)
+        {
+            return await context.Products.Find(p => p.Types.Name == type).ToListAsync();
+        }
+        public async Task<IEnumerable<Product>> GetProductsByBrand(string brand)
+        {
+            return await context.Products.Find(p => p.Brands.Name == brand).ToListAsync();
+        }
+        public async Task<IEnumerable<Product>> GetProductsByBrandId(string brandId)
+        {
+            return await context.Products.Find(p => p.Brands.Id == brandId).ToListAsync();
+        }
+        public async Task<IEnumerable<Product>> GetProductsByTypeId(string typeId)
+        {
+            return await context.Products.Find(p => p.Types.Id == typeId).ToListAsync();
+        }
+        public async Task<bool> UpdateProduct(Product product)
+        {
+            var result= await context.Products.ReplaceOneAsync(p => p.Id == product.Id, product);
+            return result.IsAcknowledged && result.ModifiedCount > 0;
+        }
+        public async Task<bool> DeleteProduct(string id)
+        {
+            var result = await context.Products.DeleteOneAsync(p => p.Id == id);
+            return result.IsAcknowledged && result.DeletedCount > 0;
         }
 
-        public Task<bool> DeleteProduct(Product product)
+        public async Task<bool> DeleteProduct(Product product)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Product>> GetProductsByBrand(string brand)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Product>> GetProductsByBrandId(string brandId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Product>> GetProductsByName(string name)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Product>> GetProductsByType(string type)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Product>> GetProductsByTypeId(string typeId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> UpdateProduct(Product product)
-        {
-            throw new NotImplementedException();
+            return await DeleteProduct(product.Id);
         }
     }
 }
