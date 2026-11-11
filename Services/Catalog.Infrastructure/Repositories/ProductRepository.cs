@@ -1,26 +1,27 @@
 ﻿using Catalog.Core.Entities;
 using Catalog.Core.Repositories;
+using Catalog.Infrastructure.Data;
+using MongoDB.Driver;
 
 namespace Catalog.Infrastructure.Repositories
 {
-    public class ProductRepository : IProductRepository
+    public class ProductRepository(ICatalogContext context) : IProductRepository
     {
+        public async Task<IEnumerable<Product>> GetProducts()
+        {
+            return await context.Products.Find(p => true).ToListAsync();
+        }
+        public async Task<Product> GetProductById(string id)
+        {
+            return await context.Products.Find(p => p.Id == id).FirstOrDefaultAsync();
+        }
+
         public Task<bool> DeleteProduct(string id)
         {
             throw new NotImplementedException();
         }
 
         public Task<bool> DeleteProduct(Product product)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Product> GetProductById(string id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Product>> GetProducts()
         {
             throw new NotImplementedException();
         }
