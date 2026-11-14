@@ -5,7 +5,7 @@ using MongoDB.Driver;
 
 namespace Catalog.Infrastructure.Repositories
 {
-    internal class TypeRepository(ICatalogContext context) : ITypeRepository
+    public class TypeRepository(ICatalogContext context) : ITypeRepository
     {
         public async Task<IEnumerable<ProductType>> GetProductTypes()
         {
