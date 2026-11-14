@@ -22,6 +22,7 @@ namespace Catalog.Application.Commands.Products
         {
             var entity = mapper.Map<Product>(request);
             var result = await productRepository.CreateProduct(entity);
+            //  TODO: exception handling
             return mapper.Map<ProductResponse>(result);
         }
     }
