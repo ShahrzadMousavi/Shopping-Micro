@@ -2,7 +2,7 @@
 using Catalog.Core.Repositories;
 using Catalog.Infrastructure.Data;
 using Catalog.Infrastructure.Repositories;
-using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +12,13 @@ builder.Services.AddControllers();
 
 //Register AutoMapper
 builder.Services.AddAutoMapper(cfg =>cfg.AddProfile<ProfileMapper>());
+//
+//Register Versioning
+builder.Services.AddApiVersioning(Options => {
+    Options.DefaultApiVersion = new ApiVersion(1, 0);
+    Options.AssumeDefaultVersionWhenUnspecified = true;
+    Options.ReportApiVersions = true;
+});
 //Mediator
 builder.Services.AddMediatR(x => x.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 // خط بالا معادل تمامی commandها و handlerهای آنها از جمله همین مثال deleteCommand میباشد=== builder.Services.AddTransient<IRequestHandler<DeleteProductCommand, bool>, DeleteProductCommandHandler>();
