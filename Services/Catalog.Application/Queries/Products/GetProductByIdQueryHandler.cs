@@ -2,8 +2,6 @@
 using Catalog.Application.Responses;
 using Catalog.Core.Repositories;
 using MediatR;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Catalog.Application.Queries.Products
 {
