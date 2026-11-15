@@ -14,7 +14,7 @@ namespace Catalog.Infrastructure.Data
         public static void SeedData(IMongoCollection<Product> collection)
         {
             var existCollection = collection.Find(p => true).Any();
-            if (!existCollection)
+            if (existCollection)
             {
                 return;
             }

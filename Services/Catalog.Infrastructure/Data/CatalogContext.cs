@@ -13,7 +13,7 @@ namespace Catalog.Infrastructure.Data
         //IConfiguration is used to read the appsettings.json file
         public CatalogContext(IConfiguration configuration)
         {
-            var client = new MongoClient(configuration.GetValue<string>(key: "DatabaseSettings:DatabaseSettings"));
+            var client = new MongoClient(configuration.GetValue<string>(key: "DatabaseSettings:ConnectionString"));
             var database = client.GetDatabase(configuration.GetValue<string>("DatabaseSettings:DatabaseName"));
             //Get all collections
             Products=database.GetCollection<Product>(configuration.GetValue<string>("DatabaseSettings:CollectionName"));

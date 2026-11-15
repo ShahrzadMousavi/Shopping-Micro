@@ -1,4 +1,5 @@
 ﻿using Catalog.Application.Mapper;
+using Catalog.Application.Queries.Brands;
 using Catalog.Core.Repositories;
 using Catalog.Infrastructure.Data;
 using Catalog.Infrastructure.Repositories;
@@ -11,8 +12,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 //Register AutoMapper
-builder.Services.AddAutoMapper(cfg =>cfg.AddProfile<ProfileMapper>());
-//
+builder.Services.AddAutoMapper(cfg => cfg.AddProfile<ProfileMapper>());
+
 //Register Versioning
 builder.Services.AddApiVersioning(Options => {
     Options.DefaultApiVersion = new ApiVersion(1, 0);
@@ -20,7 +21,11 @@ builder.Services.AddApiVersioning(Options => {
     Options.ReportApiVersions = true;
 });
 //Mediator
-builder.Services.AddMediatR(x => x.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+var assemblies=new Assembly[] {
+    Assembly.GetExecutingAssembly(),
+    typeof(GetAllProductBrandsQueryHandler).Assembly
+};
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(assemblies));
 // خط بالا معادل تمامی commandها و handlerهای آنها از جمله همین مثال deleteCommand میباشد=== builder.Services.AddTransient<IRequestHandler<DeleteProductCommand, bool>, DeleteProductCommandHandler>();
 //DI
 builder.Services.AddScoped<ICatalogContext,CatalogContext>();
