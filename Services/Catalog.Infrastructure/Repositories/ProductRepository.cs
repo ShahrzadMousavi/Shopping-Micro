@@ -1,4 +1,5 @@
-﻿using Catalog.Core.Entities;
+﻿using Catalog.Core.CatalogSpecs;
+using Catalog.Core.Entities;
 using Catalog.Core.Repositories;
 using Catalog.Infrastructure.Data;
 using MongoDB.Driver;
@@ -7,10 +8,71 @@ namespace Catalog.Infrastructure.Repositories
 {
     public class ProductRepository(ICatalogContext context) : IProductRepository
     {
-        public async Task<IEnumerable<Product>> GetProducts()
+        public async Task<Pagination<Product>> GetProducts(CatalogSpecParams specParams)
         {
-            return await context.Products.Find(p => true).ToListAsync();
+            var builder = Builders<Product>.Filter;//Create Filter
+            var filters = builder.Empty;//Empty
+            //Filters
+            filters = BuilderFilterDefinition(specParams, builder, filters);
+            //Get Total Items
+            long totalItems = await GetTotalItems(filters);
+            //Sort Data
+            SortDefinition<Product> sort = SortDefinition(specParams);
+            List<Product> data = await GetData(specParams, filters, sort);
+            return new Pagination<Product>(specParams.PageIndex, specParams.PageSize, (int)totalItems, data);
         }
+
+        private async Task<List<Product>> GetData(CatalogSpecParams specParams, FilterDefinition<Product> filters, SortDefinition<Product> sort)
+        {
+            return await context.Products.Find(filters)
+                .Sort(sort)
+                .Skip((specParams.PageIndex - 1) * specParams.PageSize)
+                .Limit(specParams.PageSize)
+                .ToListAsync();
+        }
+
+        private static SortDefinition<Product> SortDefinition(CatalogSpecParams specParams)
+        {
+            var sort = Builders<Product>.Sort.Ascending(x => x.Name);//Default sort by name
+            if (!string.IsNullOrEmpty(specParams.Sort))
+            {
+                sort = specParams.Sort switch
+                {
+                    "priceAsc" => Builders<Product>.Sort.Ascending(x => x.Price),
+                    "priceDesc" => Builders<Product>.Sort.Descending(x => x.Price),
+                    _ => Builders<Product>.Sort.Ascending(x => x.Name),//Default sort by name
+                };
+            }
+
+            return sort;
+        }
+
+        private async Task<long> GetTotalItems(FilterDefinition<Product> filters)
+        {
+            return await context.Products.CountDocumentsAsync(filters);
+        }
+
+        private static FilterDefinition<Product> BuilderFilterDefinition(CatalogSpecParams specParams, FilterDefinitionBuilder<Product> builder, FilterDefinition<Product> filters)
+        {
+            if (!string.IsNullOrEmpty(specParams.Search))
+            {
+                var searchFilter= builder.Where(x => x.Name.ToLower().Contains(specParams.Search.ToLower()));
+                filters &= searchFilter;
+            }
+            if (!string.IsNullOrEmpty(specParams.BrandId))
+            {
+                var brandFilter = builder.Eq(x => x.Brands.Id, specParams.BrandId);
+                filters &= brandFilter;
+            }
+            if (!string.IsNullOrEmpty(specParams.TypeId))
+            {
+                var typeFilter = builder.Eq(x => x.Types.Id, specParams.TypeId);
+                filters &= typeFilter;
+            }
+
+            return filters;
+        }
+
         public async Task<Product> GetProductById(string id)
         {
             return await context.Products.Find(p => p.Id == id).FirstOrDefaultAsync();

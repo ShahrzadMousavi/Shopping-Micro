@@ -3,6 +3,7 @@ using Catalog.Application.Queries.Brands;
 using Catalog.Application.Queries.Products;
 using Catalog.Application.Queries.Types;
 using Catalog.Application.Responses;
+using Catalog.Core.CatalogSpecs;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
@@ -27,9 +28,10 @@ namespace Catalog.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProductResponse>>> GetAllProducts(CancellationToken cancellationToken)
+        public async Task<ActionResult<Pagination<ProductResponse>>> GetAllProducts([FromQuery] GetAllProductsQuery request, CancellationToken cancellationToken)
         {
-            return Ok(await mediator.Send(new GetAllProductsQuery(), cancellationToken));
+            var result=await mediator.Send(request, cancellationToken);
+            return Ok(result);
         }
 
         [HttpGet]
