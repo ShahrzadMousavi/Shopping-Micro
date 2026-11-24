@@ -38,7 +38,8 @@ builder.Services.AddEndpointsApiExplorer();//برای پشتیبانی از endp
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new() { Title = "Catalog.Api", Version = "v1", Description = "Catalog Api" });
-});//برای تولید سند Swagger
+});
+//برای تولید سند Swagger
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 

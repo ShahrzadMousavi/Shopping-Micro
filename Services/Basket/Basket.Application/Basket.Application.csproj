@@ -15,8 +15,4 @@
 		<PackageReference Include="MediatR" Version="14.3.0" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Commands\CreateBasket\" />
-	</ItemGroup>
-
 </Project>
