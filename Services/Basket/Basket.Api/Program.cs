@@ -40,7 +40,7 @@ builder.Services.AddOpenApi();
 //Redis Configuration
 builder.Services.AddStackExchangeRedisCache(options =>
 {
-    options.Configuration = builder.Configuration.GetConnectionString("RedisSetting");
+    options.Configuration = builder.Configuration.GetConnectionString("Redis");
 });
 //Build
 var app = builder.Build();
